@@ -17,7 +17,12 @@ const baseImgUrl = "https://ff14-rss.netlify.app/";
 
 async function fetchRssItem(rssUrl) {
   try {
-    const res = await fetch(rssUrl);
+    const res = await fetch(rssUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; FF14RSSBot/1.0)',
+        'Accept': 'application/rss+xml,application/xml'
+      }
+    });
     const xml = await res.text();
     const parser = new XMLParser();
     const parsed = parser.parse(xml);
@@ -39,7 +44,7 @@ async function fetchRssItem(rssUrl) {
 
   for (let i = 0; i < entries.length && blocks.length < maxItems; i++) {
     const items = await fetchRssItem(entries[i].rss);
-    if (items.length > 0) {
+    if (items.length > 0 && items[0].title && items[0].link) {
       const item = items[0];
       blocks.push({
         icon: entries[i].icon,
