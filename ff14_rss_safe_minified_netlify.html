@@ -1,92 +1,71 @@
-import fs from 'fs';
-import path from 'path';
-import fetch from 'node-fetch';
-import { parseStringPromise } from 'xml2js';
 
-const RSS_URL = 'https://ff14net.2chblog.jp/index.rdf'; // ライブドアのRSS URL
-const OUTPUT_FILENAME = 'ff14_rss_safe_minified_netlify.html';
-const ICON_MAP = {
-  忍者: 'ninja.png',
-  ヴァイパー: 'viper.png',
-  ピクトマンサー: 'pictomancer.png',
-  黒魔: 'blackmage.png',
-  学者: 'scholar.png',
-  マウント: 'mount.png',
-  踊り子: 'dancer.png',
-  侍: 'samurai.png',
-  // 必要に応じて追加
-};
-const ICON_BASE = 'https://shiny-arithmetic-861adc.netlify.app/';
-
-function getIcon(title) {
-  for (const [key, icon] of Object.entries(ICON_MAP)) {
-    if (title.includes(key)) return ICON_BASE + icon;
-  }
-  return ICON_BASE + 'job.png'; // fallback
-}
-
-function truncate(text, limit = 80) {
-  return text.length > limit ? text.slice(0, limit) + '…' : text;
-}
-
-async function generateHTML() {
-  const res = await fetch(RSS_URL);
-  const xml = await res.text();
-  const json = await parseStringPromise(xml);
-  const items = json.rss.channel[0].item.slice(0, 8); // 最新8件
-
-  const list = items
-    .map(item => {
-      const title = item.title[0];
-      const link = item.link[0];
-      const icon = getIcon(title);
-      return `
-    <div class="rss-box">
-      <img src="${icon}" alt="icon">
-      <a href="${link}" target="_blank">${truncate(title)}</a>
-    </div>
-    <div class="divider"></div>`;
-    })
-    .join('\n');
-
-  const html = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Meiryo,sans-serif; margin: 0; padding: 5px; background: #fff; }
-    .rss-box { display: flex; align-items: center; }
+    .rss-box { display: flex; align-items: center; padding: 6px 0; }
     .rss-box img { height: 50px; margin-right: 8px; transition: transform .3s ease; }
+    .rss-box:hover img { transform: scale(1.05); }
     .rss-box a { font: 700 15px Meiryo,sans-serif; text-decoration: none; color: #06c; transition: .2s; }
     .rss-box a:hover { color: #048; }
-    .rss-box:hover img { transform: scale(1.05); }
     .divider { border-top: 1px dashed #ccc; margin: 4px 0; }
-    @media (max-width: 768px) {
-      .rss-box img { height: 40px; }
-      .rss-box a { font-size: 13px; }
-    }
   </style>
 </head>
 <body>
   <div id="rss-list">
-    ${list}
+    
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/bard.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62047316.html" target="_blank">【FF14】世界観警察「弓術士から狩人と詩人に派生させるべきだった。歌いながら前線で矢を撃つのはおかしい」</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/pvp.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62348358.html" target="_blank">【FF14】大規模PvP民「クリコンがDC統合マッチになったんだから大規模PvPもDC統合マッチにして！」</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/paladin.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62331693.html" target="_blank">【FF14】ナイトさんは「パッセージ・オブ・アームズ」というスキルの使いにくさに不満があるようです</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/warrior.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62252268.html" target="_blank">【FF14】日本ユーザーが極ゼレニア討滅戦を「戦戦戦戦戦戦戦戦」の戦士8人構成でクリア！</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/month.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62348471.html" target="_blank">【FF14】コスモエクスプローラーの表彰ホログラム、このコンテンツの目玉みたいな紹介だったのに未だ実装されず・・・</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/dancer.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62293654.html" target="_blank">【FF14】踊り子さんは「クローズドポジション」の使いにくすぎる仕様に不満があるようです</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/scholar.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62294536.html" target="_blank">【FF14】学者が「疾風怒濤の計」を持つのはおかしい？移動速度が上がるスキルはレンジに渡すべきという声も</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/monk.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62299118.html" target="_blank">【FF14】モンク「強いです、席安泰です、7.0AF装備可愛いです」←このジョブが不人気な理由</a>
+        </div>
+        <div class="divider"></div>
+      
   </div>
 </body>
-</html>`;
-
-  const outDir = path.resolve('scripts');
-  const outFile = path.join(outDir, OUTPUT_FILENAME);
-  const rootFile = path.resolve(OUTPUT_FILENAME);
-
-  // 書き出し
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(outFile, html, 'utf-8');
-  fs.copyFileSync(outFile, rootFile);
-  console.log(`✅ RSS HTML written to ${outFile} and copied to root`);
-}
-
-generateHTML().catch(err => {
-  console.error('❌ Error:', err);
-  process.exit(1);
-});
+</html>
+  
