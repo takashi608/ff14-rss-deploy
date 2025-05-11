@@ -1,74 +1,78 @@
 const fs = require('fs');
-const path = require('path');
 const fetch = require('node-fetch');
 const { XMLParser } = require('fast-xml-parser');
 
+// 全31カテゴリ（アイコンとRDF URL）
 const rssSources = [
-  { icon: 'paladin.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1132268.xml' },
-  { icon: 'warrior.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1132269.xml' },
-  { icon: 'gunbreaker.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1339983.xml' },
-  { icon: 'darkknight.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1243883.xml' },
-  { icon: 'hall_of_the_novice.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1133076.xml' }
+  { icon: 'paladin.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1123268.xml' },
+  { icon: 'warrior.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1123269.xml' },
+  { icon: 'gunbreaker.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1339958.xml' },
+  { icon: 'darkknight.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1243803.xml' },
+  { icon: 'whitemage.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1123278.xml' },
+  { icon: 'astrologian.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1262192.xml' },
+  { icon: 'sage.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1351530.xml' },
+  { icon: 'scholar.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1123277.xml' },
+  { icon: 'dragoon.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1123272.xml' },
+  { icon: 'monk.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1123273.xml' },
+  { icon: 'ninja.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1220916.xml' },
+  { icon: 'samurai.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1317958.xml' },
+  { icon: 'reaper.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1352544.xml' },
+  { icon: 'viper.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1361703.xml' },
+  { icon: 'pictomancer.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1362205.xml' },
+  { icon: 'bard.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1123274.xml' },
+  { icon: 'machinist.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1262306.xml' },
+  { icon: 'dancer.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1341049.xml' },
+  { icon: 'blackmage.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1122351.xml' },
+  { icon: 'summoner.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1123276.xml' },
+  { icon: 'redmage.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1315505.xml' },
+  { icon: 'bluemag.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1338256.xml' },
+  { icon: 'talk.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1323604.xml' },
+  { icon: 'housing.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1171345.xml' },
+  { icon: 'month.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1362211.xml' },
+  { icon: 'news.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1128587.xml' },
+  { icon: 'pvp.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1221801.xml' },
+  { icon: 'mount.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1203979.xml' },
+  { icon: 'limit_break.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1128880.xml' },
+  { icon: 'blacklist.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1308461.xml' },
+  { icon: 'hall_of_the_novice.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1130376.xml' }
 ];
 
 const shuffle = arr => arr.sort(() => Math.random() - 0.5);
 const maxItems = 8;
-const baseImgUrl = "https://ff14-rss.netlify.app/";
+const baseImgUrl = "https://shiny-arithmetic-861adc.netlify.app/";
 
 async function fetchRssItem(rssUrl) {
-  console.log(`📡 Fetching: ${rssUrl}`);
   try {
     const res = await fetch(rssUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-        'Accept': 'application/rss+xml,application/xml,text/xml;q=0.9'
+        'User-Agent': 'Mozilla/5.0',
+        'Accept': 'application/xml,text/xml;q=0.9'
       }
     });
 
-    if (!res.ok) {
-      console.error(`❌ HTTPエラー: ${res.status} ${rssUrl}`);
-      return [];
-    }
+    if (!res.ok) return [];
 
     const xml = await res.text();
-
-    console.log(`🔍 [FETCHED XML from ${rssUrl}]`);
-    console.log(xml.substring(0, 500)); // 冒頭ログ出力
-
-    const parser = new XMLParser();
+    const parser = new XMLParser({ ignoreAttributes: false });
     const parsed = parser.parse(xml);
-    const items = parsed.rss?.channel?.item || [];
-
-    if (items.length === 0) {
-      console.warn(`⚠️ RSSアイテムが見つかりません: ${rssUrl}`);
-    }
-
-    return items.slice(0, 5).map(entry => ({
-      title: entry.title,
-      link: entry.link,
-      pubDate: entry.pubDate
-    }));
-  } catch (e) {
-    console.error(`🛑 Error fetching RSS from ${rssUrl}`, e);
+    const items = parsed['rdf:RDF']?.item;
+    return Array.isArray(items) ? items : [items];
+  } catch {
     return [];
   }
 }
 
 (async () => {
-  const entries = shuffle(rssSources).slice(0, 10);
-  console.log("🌀 entries to fetch:", entries);
-
+  const entries = shuffle(rssSources);
   const blocks = [];
 
   for (let i = 0; i < entries.length && blocks.length < maxItems; i++) {
     const items = await fetchRssItem(entries[i].rss);
-    if (items.length > 0 && items[0].title && items[0].link) {
-      console.log(`✅ Fetched item: ${items[0].title}`);
-      const item = items[0];
+    if (items?.[0]?.title && items[0]?.link) {
       blocks.push({
         icon: entries[i].icon,
-        link: item.link,
-        title: item.title
+        title: items[0].title,
+        link: items[0].link
       });
     }
   }
@@ -98,9 +102,7 @@ async function fetchRssItem(rssUrl) {
           <a href="${b.link}" target="_blank">${b.title}</a>
         </div>
         <div class="divider"></div>
-      `).join('') : `
-        <div class="rss-box"><img src="icon" alt="icon"><a href="#">RSSを取得できませんでした</a></div>
-      `
+      `).join('') : `<div class="rss-box"><a href="#">RSS取得失敗</a></div>`
     }
   </div>
 </body>
