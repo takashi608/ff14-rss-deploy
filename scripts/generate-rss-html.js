@@ -10,7 +10,8 @@ const rssSources = [
   { icon: 'hall_of_the_novice.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1133076.xml' }
 ];
 
-const GAS_API = 'https://script.google.com/macros/s/AKfycbznPNERcBnFkr3MfgWMXslO6l9z_wVEU3THIgD2rLa8HAH0LsDI9FFGW1Y80zepAVyD/exec';
+const GAS_API = "https://script.google.com/macros/s/AKfycbznPNERcBnFkr3MfgWMXslO6l9z_wVEU3THIgD2rLa8HAH0LsDI9FFGW1Y80zepAVyD/exec"; 
+
 
 const shuffle = arr => arr.sort(() => Math.random() - 0.5);
 const maxItems = 8;
