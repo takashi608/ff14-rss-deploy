@@ -4,15 +4,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: Meiryo,sans-serif; margin: 0; padding: 5px; background: #fff; }
-    .rss-box { display: flex; align-items: center; }
-    .rss-box img { height: 50px; margin-right: 8px; transition: transform .3s ease; }
-    .rss-box:hover img { transform: scale(1.05); }
-    .rss-box a { font: 700 15px Meiryo,sans-serif; text-decoration: none; color: #06c; transition: .2s; }
-    .rss-box a:hover { color: #048; }
-    .divider { border-top: 1px dashed #ccc; margin: 4px 0; }
-  </style>
+<style>
+  body {
+    font-family: Meiryo, sans-serif;
+    margin: 0;
+    padding: 5px;
+    background: #fff;
+  }
+
+  .rss-box {
+    display: flex;
+    align-items: center;
+    padding: 0px 0;
+  }
+
+  .rss-box img {
+    height: 50px;
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+  }
+
+  .rss-box:hover img {
+    transform: scale(1.05);
+  }
+
+  .rss-box a {
+    font: 700 15px Meiryo, sans-serif;
+    text-decoration: none;
+    color: #06c;
+    transition: 0.2s;
+  }
+
+  .rss-box a:hover {
+    color: #048;
+  }
+
+  .divider {
+    border-top: 1px dashed #ccc;
+    margin: 4px 0;
+  }
+
+  /* ✅ スマホ対応 */
+  @media (max-width: 480px) {
+    .rss-box img {
+      height: 40px;
+    }
+
+    .rss-box a {
+      font-size: 13px;
+    }
+  }
+</style>
+
 </head>
 <body>
   <div id="rss-list">
