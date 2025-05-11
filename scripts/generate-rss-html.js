@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
+const { XMLParser } = require('fast-xml-parser');
 
 const rssSources = [
   { icon: 'paladin.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1132268.xml' },
@@ -10,31 +11,41 @@ const rssSources = [
   { icon: 'hall_of_the_novice.png', rss: 'https://ff14net.2chblog.jp/archives/cat_1133076.xml' }
 ];
 
-const GAS_API = "https://script.google.com/macros/s/AKfycbznPNERcBnFkr3MfgWMXslO6l9z_wVEU3THIgD2rLa8HAH0LsDI9FFGW1Y80zepAVyD/exec";
-
 const shuffle = arr => arr.sort(() => Math.random() - 0.5);
 const maxItems = 8;
 const baseImgUrl = "https://ff14-rss.netlify.app/";
 
 async function fetchRssItem(rssUrl) {
   try {
-    const res = await fetch(`${GAS_API}?url=` + encodeURIComponent(rssUrl));
-    const data = await res.json();
-    const items = data.items || [];
-    return items[Math.floor(Math.random() * items.length)];
+    const res = await fetch(rssUrl);
+    const xml = await res.text();
+    const parser = new XMLParser();
+    const parsed = parser.parse(xml);
+    const items = parsed.rss?.channel?.item || [];
+    return items.slice(0, 5).map(entry => ({
+      title: entry.title,
+      link: entry.link,
+      pubDate: entry.pubDate
+    }));
   } catch (e) {
-    return null;
+    console.error(`Error fetching RSS from ${rssUrl}`, e);
+    return [];
   }
 }
 
 (async () => {
-  const entries = shuffle(rssSources).slice(0, 16);
+  const entries = shuffle(rssSources).slice(0, 10);
   const blocks = [];
 
   for (let i = 0; i < entries.length && blocks.length < maxItems; i++) {
-    const item = await fetchRssItem(entries[i].rss);
-    if (item && item.title && item.link) {
-      blocks.push({ ...item, icon: entries[i].icon });
+    const items = await fetchRssItem(entries[i].rss);
+    if (items.length > 0) {
+      const item = items[0];
+      blocks.push({
+        icon: entries[i].icon,
+        link: item.link,
+        title: item.title
+      });
     }
   }
 
@@ -57,20 +68,20 @@ async function fetchRssItem(rssUrl) {
 <body>
   <div id="rss-list">
     ${
-      blocks.length === 0
-        ? '<div class="rss-box"><img src="icon" alt="icon"><div><a href="#">RSSを取得できませんでした</a></div></div>'
-        : blocks.map(b => `
-          <div class="rss-box">
-            <img src="${baseImgUrl}icon/${b.icon}" alt="icon">
-            <a href="${b.link}" target="_blank">${b.title}</a>
-          </div>
-          <div class="divider"></div>
-        `).join('')
+      blocks.length > 0 ? blocks.map(b => `
+        <div class="rss-box">
+          <img src="${baseImgUrl + b.icon}" alt="icon">
+          <a href="${b.link}" target="_blank">${b.title}</a>
+        </div>
+        <div class="divider"></div>
+      `).join('') : `
+        <div class="rss-box"><img src="icon" alt="icon"><a href="#">RSSを取得できませんでした</a></div>
+      `
     }
   </div>
 </body>
 </html>
-`;
+  `;
 
-  fs.writeFileSync("ff14_rss_safe_minified_netlify.html", html, "utf8");
+  fs.writeFileSync('ff14_rss_safe_minified_netlify.html', html, 'utf8');
 })();
