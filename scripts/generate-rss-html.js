@@ -33,7 +33,7 @@ async function fetchRssItem(rssUrl) {
     const xml = await res.text();
 
     console.log(`🔍 [FETCHED XML from ${rssUrl}]`);
-    console.log(xml.substring(0, 500)); // 冒頭だけログ出力
+    console.log(xml.substring(0, 500)); // 冒頭ログ出力
 
     const parser = new XMLParser();
     const parsed = parser.parse(xml);
@@ -56,11 +56,14 @@ async function fetchRssItem(rssUrl) {
 
 (async () => {
   const entries = shuffle(rssSources).slice(0, 10);
+  console.log("🌀 entries to fetch:", entries);
+
   const blocks = [];
 
   for (let i = 0; i < entries.length && blocks.length < maxItems; i++) {
     const items = await fetchRssItem(entries[i].rss);
     if (items.length > 0 && items[0].title && items[0].link) {
+      console.log(`✅ Fetched item: ${items[0].title}`);
       const item = items[0];
       blocks.push({
         icon: entries[i].icon,
