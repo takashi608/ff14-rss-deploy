@@ -1,100 +1,71 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Meiryo, sans-serif;
-      margin: 0;
-      padding: 5px 0;
-      background: #fff;
-    }
-    .rss-box {
-      display: flex;
-      align-items: center;
-    }
-    .rss-box img {
-      height: 50px;
-      margin-right: 8px;
-      transition: transform .3s ease;
-    }
-    .rss-box:hover img {
-      transform: scale(1.05);
-    }
-    .rss-box a {
-      font: 700 15px Meiryo, sans-serif;
-      text-decoration: none;
-      color: #06c;
-      transition: .2s;
-    }
-    .rss-box a:hover {
-      color: #048;
-    }
-    .divider {
-      border-top: 1px dashed #ccc;
-      margin: 4px 0;
-    }
-    @media screen and (max-width: 768px) {
-      .rss-box img {
-        height: 40px;
-        width: 40px;
-      }
-      .rss-box a {
-        font-size: 13px;
-      }
-    }
+    body { font-family: Meiryo,sans-serif; margin: 0; padding: 5px; background: #fff; }
+    .rss-box { display: flex; align-items: center; padding: 6px 0; }
+    .rss-box img { height: 50px; margin-right: 8px; transition: transform .3s ease; }
+    .rss-box:hover img { transform: scale(1.05); }
+    .rss-box a { font: 700 15px Meiryo,sans-serif; text-decoration: none; color: #06c; transition: .2s; }
+    .rss-box a:hover { color: #048; }
+    .divider { border-top: 1px dashed #ccc; margin: 4px 0; }
   </style>
 </head>
 <body>
-  <div id="rss-list"></div>
-
-  <script>
-    const sources = [
-      { icon: "ninja.png", rss: "https://ff14net.2chblog.jp/index.rdf" },
-      { icon: "viper.png", rss: "https://example.com/viper.xml" },
-      { icon: "pictomancer.png", rss: "https://example.com/picto.xml" },
-      { icon: "blackmage.png", rss: "https://example.com/blm.xml" },
-      { icon: "scholar.png", rss: "https://example.com/sch.xml" },
-      { icon: "mount.png", rss: "https://example.com/mount.xml" },
-      { icon: "dancer.png", rss: "https://example.com/dnc.xml" },
-      { icon: "samurai.png", rss: "https://example.com/sam.xml" }
-    ];
-
-    const iconsBase = "https://shiny-arithmetic-861adc.netlify.app/";
-
-    async function fetchRSS(url) {
-      const res = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
-      const data = await res.json();
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(data.contents, "text/xml");
-      const item = xml.querySelector("item");
-      return {
-        title: item?.querySelector("title")?.textContent || "",
-        link: item?.querySelector("link")?.textContent || ""
-      };
-    }
-
-    async function buildRSS() {
-      const list = document.getElementById("rss-list");
-      for (const src of sources) {
-        const { title, link } = await fetchRSS(src.rss);
-        if (title && link) {
-          const box = document.createElement("div");
-          box.className = "rss-box";
-          box.innerHTML = `
-            <img src="${iconsBase}${src.icon}" alt="icon">
-            <a href="${link}" target="_blank">${title}</a>
-          `;
-          list.appendChild(box);
-          const divider = document.createElement("div");
-          divider.className = "divider";
-          list.appendChild(divider);
-        }
-      }
-    }
-
-    buildRSS();
-  </script>
+  <div id="rss-list">
+    
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/housing.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62339329.html" target="_blank">【FF14】潜水艦金策が広まりすぎたせい？不人気だったハウジング土地ですら当選倍率が高い状況になっている件</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/limit_break.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62347578.html" target="_blank">【FF14】クルーザー級零式で沼っている人は必見！”コレ”に注意すればクリア済みのお手伝いが来やすくなるぞ！</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/blackmage.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62316350.html" target="_blank">【FF14】黒魔道士が扱いやすくなったという評判を聞いてレベリングを始めた結果・・・</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/scholar.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62294536.html" target="_blank">【FF14】学者が「疾風怒濤の計」を持つのはおかしい？移動速度が上がるスキルはレンジに渡すべきという声も</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/blacklist.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62347501.html" target="_blank">【FF14】月面刑務所の模範囚たち、共同施工作業をサボる人にブチギレ「エモートで遊ぶな！手伝って！」</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/talk.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62338616.html" target="_blank">【掲示板】ギャザクラ系コンテンツが面白くなる方法を考えるスレ【FF14】</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/pvp.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62348358.html" target="_blank">【FF14】大規模PvP民「クリコンがDC統合マッチになったんだから大規模PvPもDC統合マッチにして！」</a>
+        </div>
+        <div class="divider"></div>
+      
+        <div class="rss-box">
+          <img src="https://shiny-arithmetic-861adc.netlify.app/month.png" alt="icon">
+          <a href="https://ff14net.2chblog.jp/archives/62348471.html" target="_blank">【FF14】コスモエクスプローラーの表彰ホログラム、このコンテンツの目玉みたいな紹介だったのに未だ実装されず・・・</a>
+        </div>
+        <div class="divider"></div>
+      
+  </div>
 </body>
 </html>
+  
