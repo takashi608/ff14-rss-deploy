@@ -16,6 +16,7 @@ const maxItems = 8;
 const baseImgUrl = "https://ff14-rss.netlify.app/";
 
 async function fetchRssItem(rssUrl) {
+  console.log(`📡 Fetching: ${rssUrl}`);
   try {
     const res = await fetch(rssUrl, {
       headers: {
@@ -31,9 +32,8 @@ async function fetchRssItem(rssUrl) {
 
     const xml = await res.text();
 
-    // 🛠 デバッグログをここに追加
     console.log(`🔍 [FETCHED XML from ${rssUrl}]`);
-    console.log(xml.substring(0, 500)); // 冒頭500文字だけ表示（長さ調整可能）
+    console.log(xml.substring(0, 500)); // 冒頭だけログ出力
 
     const parser = new XMLParser();
     const parsed = parser.parse(xml);
