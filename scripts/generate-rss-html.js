@@ -19,21 +19,32 @@ async function fetchRssItem(rssUrl) {
   try {
     const res = await fetch(rssUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; FF14RSSBot/1.0)',
-        'Accept': 'application/rss+xml,application/xml'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'Accept': 'application/rss+xml,application/xml,text/xml;q=0.9'
       }
     });
+
+    if (!res.ok) {
+      console.error(`❌ HTTPエラー: ${res.status} ${rssUrl}`);
+      return [];
+    }
+
     const xml = await res.text();
     const parser = new XMLParser();
     const parsed = parser.parse(xml);
     const items = parsed.rss?.channel?.item || [];
+
+    if (items.length === 0) {
+      console.warn(`⚠️ RSSアイテムが見つかりません: ${rssUrl}`);
+    }
+
     return items.slice(0, 5).map(entry => ({
       title: entry.title,
       link: entry.link,
       pubDate: entry.pubDate
     }));
   } catch (e) {
-    console.error(`Error fetching RSS from ${rssUrl}`, e);
+    console.error(`🛑 Error fetching RSS from ${rssUrl}`, e);
     return [];
   }
 }
