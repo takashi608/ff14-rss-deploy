@@ -30,6 +30,11 @@ async function fetchRssItem(rssUrl) {
     }
 
     const xml = await res.text();
+
+    // 🛠 デバッグログをここに追加
+    console.log(`🔍 [FETCHED XML from ${rssUrl}]`);
+    console.log(xml.substring(0, 500)); // 冒頭500文字だけ表示（長さ調整可能）
+
     const parser = new XMLParser();
     const parsed = parser.parse(xml);
     const items = parsed.rss?.channel?.item || [];
